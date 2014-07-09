@@ -1,0 +1,372 @@
+<html>
+<!--
+  Nice to have:
+    AutoSave (http://jsfiddle.net/jalalhejazi/Xh2En/)
+    Toolbar
+    Export (to .md & .pdf?)
+    Cheatsheet in popup
+    Versions
+    Nicer alerts
+-->
+  <head>
+    <title>Markdown editor</title>
+    <link rel="stylesheet" href="https://raw.githubusercontent.com/isagalaev/highlight.js/master/src/styles/github.css">
+    <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+    <style type="text/css">
+      body {
+        background: #fcfcfc;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      }
+      #editor, #preview {
+        background: #fff;
+        padding: 1%;
+        width: 48%;
+        float: left;
+        min-height: 80%;
+      }
+      #controls {
+        text-align: left;
+        margin-bottom: 20px;
+/*        margin: 0 auto;
+        width:1000px;*/
+      }
+      #editor {
+        font-size: 1em;
+        font-family:monospace;
+        border: none;
+        outline: none;
+        resize: none;
+        margin-right: 0.5%;
+      }
+      #preview {
+        margin-left: 0.5%;
+      }
+      ul#archive{
+        padding:0;
+      }
+      ul#archive:after,
+      ul#archive li.first:after {
+        content:'';
+        display:block;
+        clear: both;
+      }
+      ul#archive li{
+        list-style-type: none;
+        text-align: left;
+        border:solid 1px #ccc;
+        padding:3px;
+        border-radius: 3px;
+        float:left;
+        margin:3px;
+      }
+      ul#archive li.first{
+        float:none;
+        border:none;
+
+      }
+      ul#archive h2{
+        margin-bottom:0;
+        float:none;
+      }
+      #filename{
+        border:solid 1px #ccc;
+        padding: 5px;
+        font-size: 1.2em;
+      }
+      #filename:focus{
+        border:solid 1px red;
+        outline:none;
+      }
+      #delete{
+        display: none;
+      }
+
+      .button {
+        -moz-box-shadow:inset 0px 1px 0px 0px #bbdaf7;
+        -webkit-box-shadow:inset 0px 1px 0px 0px #bbdaf7;
+        box-shadow:inset 0px 1px 0px 0px #bbdaf7;
+        background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #79bbff), color-stop(1, #378de5) );
+        background:-moz-linear-gradient( center top, #79bbff 5%, #378de5 100% );
+        background-color:#79bbff;
+        border-radius:5px;
+        text-indent:0;
+        border:1px solid #84bbf3;
+        display:inline-block;
+        color:#ffffff;
+        font-family:Arial;
+        font-size:15px;
+        font-weight:bold;
+        font-style:normal;
+        height:36px;
+      /*  line-height:36px;*/
+        width:71px;
+        text-decoration:none;
+        text-align:center;
+        text-shadow:1px 1px 0px #528ecc;
+      }
+      .button:hover {
+        background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #378de5), color-stop(1, #79bbff) );
+        background:-moz-linear-gradient( center top, #378de5 5%, #79bbff 100% );
+        background-color:#378de5;
+      }
+      .button:active {
+        position:relative;
+        top:1px;
+      }
+      .button:focus {
+        outline:none;
+      }
+
+      .button.red {
+        background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #fe1a00), color-stop(1, #ce0100) );
+        background:-moz-linear-gradient( center top, #fe1a00 5%, #ce0100 100% );
+        background-color:#fe1a00;
+        border:1px solid #d83526;
+        color:#ffffff;
+        text-shadow:1px 1px 0px #b23e35;
+      }
+      .classname:hover {
+        background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #ce0100), color-stop(1, #fe1a00) );
+        background:-moz-linear-gradient( center top, #ce0100 5%, #fe1a00 100% );
+        background-color:#ce0100;
+      }
+
+
+
+      /* github.com style (c) Vasily Polovnyov <vast@whiteants.net>*/
+      pre,code {
+        display: inline-block;
+        /*padding: 0.5em;*/
+        color: #333;
+        background: #f8f8f8;
+        border: 1px solid #DDD;
+        border-radius: 3px;
+      }
+      pre code{
+        border:none;
+        padding: 0.5em;
+      }
+
+      .comment,
+      .template_comment,
+      .diff .header,
+      .javadoc {
+        color: #998;
+        font-style: italic;
+      }
+
+      .keyword,
+      .css .rule .keyword,
+      .winutils,
+      .javascript .title,
+      .nginx .title,
+      .subst,
+      .request,
+      .status {
+        color: #333;
+        font-weight: bold;
+      }
+
+      .number,
+      .hexcolor,
+      .ruby .constant {
+        color: #099;
+      }
+
+      .string,
+      .tag .value,
+      .phpdoc,
+      .tex .formula {
+        color: #d14;
+      }
+
+      .title,
+      .id,
+      .coffeescript .params,
+      .scss .preprocessor {
+        color: #900;
+        font-weight: bold;
+      }
+
+      .javascript .title,
+      .lisp .title,
+      .clojure .title,
+      .subst {
+        font-weight: normal;
+      }
+
+      .class .title,
+      .haskell .type,
+      .vhdl .literal,
+      .tex .command {
+        color: #458;
+        font-weight: bold;
+      }
+
+      .tag,
+      .tag .title,
+      .rules .property,
+      .django .tag .keyword {
+        color: #000080;
+        font-weight: normal;
+      }
+
+      .attribute,
+      .variable,
+      .lisp .body {
+        color: #008080;
+      }
+
+      .regexp {
+        color: #009926;
+      }
+
+      .symbol,
+      .ruby .symbol .string,
+      .lisp .keyword,
+      .tex .special,
+      .prompt {
+        color: #990073;
+      }
+
+      .built_in,
+      .lisp .title,
+      .clojure .built_in {
+        color: #0086b3;
+      }
+
+      .preprocessor,
+      .pragma,
+      .pi,
+      .doctype,
+      .shebang,
+      .cdata {
+        color: #999;
+        font-weight: bold;
+      }
+
+      .deletion {
+        background: #fdd;
+      }
+
+      .addition {
+        background: #dfd;
+      }
+
+      .diff .change {
+        background: #0086b3;
+      }
+
+      .chunk {
+        color: #aaa;
+      }
+
+    </style>
+    <style type="text/css"  media="print">
+      #controls,
+      #editor{
+        display: none;
+      }
+      body{font-size:10pt;}
+      h1{font-size:1.5em;}
+      h2{font-size:1.2em;}
+      a:link, a:visited {color: #781351}
+      a:after {content: " (" attr(href) ")";}
+
+    </style>
+  </head>
+  <body>
+    <div id="controls">
+      <ul id="archive">
+        <li class="first"><h2>Entries</h2></li>
+      </ul>
+      <input type="text" id="filename" />
+      <button type="button" class="button" id="save">Save</button>
+      <button type="button" class="button" id="load">Load</button>
+      <button type="button" class="button red" id="delete">delete</button><br />
+      <a href="https://github.com/adam-p/markdown-here/wiki/Markdown-Here-Cheatsheet" target="_blank">Markdown Cheatsheet</a><br />
+      <a href="http://fontawesome.io/icons/" target="_blank">Font Awesome Icons (%fa-icon and @glyphicon-icon)</a>
+
+    </div>
+    <textarea id="editor" autofocus></textarea>
+    <div id="preview"></div>
+
+    <script src="showdown.js"></script>
+    <script src="extensions/github.js"></script>
+    <script src="extensions/twitter.js"></script>
+    <script src="extensions/prettify.js"></script>
+    <script src="extensions/table.js"></script>
+    <script src="extensions/showdown-icons.js"></script>
+
+    <script src="http://yandex.st/highlightjs/7.3/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+    <script type="text/javascript">
+      window.onload = function () {
+        var converter     = new Showdown.converter({extensions:['github','prettify','table','icon']});
+        // var converter     = new Showdown.converter({ extensions: 'twitter' });
+
+        var editor        = document.getElementById('editor');
+        var preview       = document.getElementById('preview');
+        var filenameInput = document.getElementById('filename');
+        var saveButton    = document.getElementById('save');
+        var loadButton    = document.getElementById('load');
+        var deleteButton  = document.getElementById('delete');
+        var archivelist   = document.getElementById('archive');
+
+        for(var i=0, len=localStorage.length; i<len; i++) {
+            var key = localStorage.key(i);
+            var value = localStorage[key];
+            var newListItem = document.createElement('li');
+            var innerHTML = key.replace('markdowneditor.file.','');
+
+            newListItem.onclick = function(arg) {
+              return function() {
+                filenameInput.value = arg;
+                }
+              }(innerHTML);
+            newListItem.innerHTML=innerHTML;
+            archivelist.appendChild(newListItem);
+        }
+
+        var redraw = function () {
+          preview.innerHTML = converter.makeHtml(editor.value);
+          var aCodes = preview.getElementsByTagName('pre');
+          for (var i = 0; i < aCodes.length; i++) {
+            hljs.highlightBlock(aCodes[i]);
+          }
+        };
+
+        saveButton.onclick = function () {
+          var filename = filenameInput.value;
+          if (filename.length > 0) {
+            localStorage['markdowneditor.file.' + filename] = editor.value;
+            alert("Saved!");
+          }
+        };
+
+        loadButton.onclick = function () {
+          var filename = filenameInput.value;
+          if (filename.length > 0) {
+            editor.value = localStorage['markdowneditor.file.' + filename];
+            redraw();
+          }
+          deleteButton.value = 'markdowneditor.file.' + filename;
+          deleteButton.style.display = 'inline-block';
+        };
+
+        deleteButton.onclick = function () {
+          var key = this.value;
+          var result = confirm("Are you sure you want to delete: "+key);
+          if(result == true){
+            localStorage.removeItem(key);
+            location.reload();
+          }
+        };
+
+        editor.onkeyup = redraw;
+      };
+    </script>
+
+  </body>
+</html>
