@@ -3,7 +3,7 @@
   Nice to have:
     AutoSave (http://jsfiddle.net/jalalhejazi/Xh2En/)
     Toolbar
-    Export (to .md & .pdf?)
+    Export (to .md & .pdf?) -- done
     Cheatsheet in popup
     Versions
     Nicer alerts
@@ -260,6 +260,19 @@
       .chunk {
         color: #aaa;
       }
+      table {
+          border-collapse: collapse;
+          border-spacing: 0
+      }
+      tr{
+        background-color: #FFF;
+        border-top: 1px solid #CCC;
+      }
+      td,
+      th {
+        padding: 6px 13px;
+        border: 1px solid #DDD;
+      }
 
     </style>
     <style type="text/css"  media="print">
@@ -283,7 +296,9 @@
       <input type="text" id="filename" />
       <button type="button" class="button" id="save">Save</button>
       <button type="button" class="button" id="load">Load</button>
-      <button type="button" class="button red" id="delete">delete</button><br />
+      <button type="button" class="button red" id="delete">Delete</button>
+      <a href="" id="export">Export to file</a>
+      <br />
       <a href="https://github.com/adam-p/markdown-here/wiki/Markdown-Here-Cheatsheet" target="_blank">Markdown Cheatsheet</a><br />
       <a href="http://fontawesome.io/icons/" target="_blank">Font Awesome Icons (%fa-icon and @glyphicon-icon)</a>
 
@@ -312,6 +327,7 @@
         var saveButton    = document.getElementById('save');
         var loadButton    = document.getElementById('load');
         var deleteButton  = document.getElementById('delete');
+        var exportButton  = document.getElementById('export');
         var archivelist   = document.getElementById('archive');
 
         for(var i=0, len=localStorage.length; i<len; i++) {
@@ -363,6 +379,15 @@
             location.reload();
           }
         };
+
+        exportButton.onclick = function () {
+          console.log('export clicked');
+          var filename = filenameInput.value;
+          var exportdata = editor.value;
+          mimeType = 'text/plain';
+          this.setAttribute('download', filename + '.md');
+          this.setAttribute('href', 'data:' + mimeType  +  ';charset=utf-8,' + encodeURIComponent(exportdata));
+        }
 
         editor.onkeyup = redraw;
       };
