@@ -353,11 +353,24 @@
           }
         };
 
+        editor.addEventListener('keyup', function() {
+          var filename = filenameInput.value;
+          if (!filename.length > 0) {
+            // alert("Saved!");
+            var d = Date.now();
+            filename = 'autosave_' + d;
+          }
+          localStorage['markdowneditor.file.' + filename] = editor.value;
+        }, false);
+
+
         saveButton.onclick = function () {
           var filename = filenameInput.value;
           if (filename.length > 0) {
             localStorage['markdowneditor.file.' + filename] = editor.value;
             alert("Saved!");
+          }else{
+            alert("No filename!");
           }
         };
 
