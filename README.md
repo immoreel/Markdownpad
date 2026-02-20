@@ -1,6 +1,7 @@
 # MarkdownPad
 
-A lightweight, browser-based Markdown editor in a single HTML file.
+A lightweight, browser-based Markdown editor in a single HTML file.  
+[Try it out!](https://immoreel.github.io/Markdownpad/markdownpad.html)
 
 ## Features
 
