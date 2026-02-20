@@ -393,6 +393,41 @@
       font-weight: bold;
     }
 
+    /* TOC styling */
+    .toc {
+      background: var(--editor-bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 15px 20px;
+      margin: 1em 0;
+    }
+
+    .toc strong {
+      display: block;
+      margin-bottom: 10px;
+      color: var(--primary);
+    }
+
+    .toc ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .toc li {
+      padding: 4px 0;
+    }
+
+    .toc a {
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    .toc a:hover {
+      color: var(--primary);
+      text-decoration: underline;
+    }
+
     /* Search/Replace dialog */
     #search-dialog {
       display: none;
@@ -880,6 +915,7 @@
         <tr><td>Checklist</td><td><code>- [ ] task</code></td></tr>
         <tr><td>Horizontal Rule</td><td><code>---</code></td></tr>
         <tr><td>Table</td><td><code>| H1 | H2 |<br>|----|----| <br>| C1 | C2 |</code></td></tr>
+        <tr><td>Table of Contents</td><td><code>[TOC]</code></td></tr>
       </table>
 
       <h3>Keyboard Shortcuts</h3>
@@ -982,6 +1018,62 @@
       }];
     });
 
+    // TOC (Table of Contents) extension
+    showdown.extension('toc', function() {
+      return [{
+        type: 'output',
+        filter: function(html) {
+          // Check if [TOC] marker exists
+          if (!html.includes('[TOC]') && !html.includes('[toc]')) {
+            return html;
+          }
+
+          // Extract all headers from the HTML
+          const headerRegex = /<h([1-6])>(.*?)<\/h\1>/gi;
+          const headers = [];
+          let match;
+
+          while ((match = headerRegex.exec(html)) !== null) {
+            const level = parseInt(match[1]);
+            const text = match[2].replace(/<[^>]+>/g, ''); // Strip HTML tags
+            const slug = text.toLowerCase()
+              .replace(/[^\w\s-]/g, '')
+              .replace(/\s+/g, '-')
+              .replace(/-+/g, '-')
+              .trim();
+            headers.push({ level, text, slug });
+          }
+
+          if (headers.length === 0) {
+            return html.replace(/\[TOC\]|\[toc\]/gi, '');
+          }
+
+          // Add IDs to headers in HTML
+          let headerIndex = 0;
+          html = html.replace(/<h([1-6])>(.*?)<\/h\1>/gi, (match, level, content) => {
+            const slug = headers[headerIndex].slug;
+            headerIndex++;
+            return `<h${level} id="${slug}">${content}</h${level}>`;
+          });
+
+          // Build TOC HTML
+          let tocHtml = '<nav class="toc"><strong>Table of Contents</strong><ul>';
+          const minLevel = Math.min(...headers.map(h => h.level));
+
+          headers.forEach(header => {
+            const indent = header.level - minLevel;
+            const padding = indent * 20;
+            tocHtml += `<li style="margin-left:${padding}px"><a href="#${header.slug}">${header.text}</a></li>`;
+          });
+
+          tocHtml += '</ul></nav>';
+
+          // Replace [TOC] marker with generated TOC
+          return html.replace(/\[TOC\]|\[toc\]/gi, tocHtml);
+        }
+      }];
+    });
+
     // ==========================================
     // Utility Functions
     // ==========================================
@@ -1022,7 +1114,7 @@
     document.addEventListener('DOMContentLoaded', function() {
       // Initialize Showdown converter with extensions
       const converter = new showdown.Converter({
-        extensions: ['github', 'table', 'checklist'],
+        extensions: ['github', 'table', 'checklist', 'toc'],
         tables: true,
         strikethrough: true,
         ghCodeBlocks: true,
