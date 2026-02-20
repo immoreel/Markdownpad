@@ -1023,13 +1023,17 @@
       return [{
         type: 'output',
         filter: function(html) {
-          // Check if [TOC] marker exists
-          if (!html.includes('[TOC]') && !html.includes('[toc]')) {
+          // Check if [TOC] marker exists (may be wrapped in <p> tags)
+          const tocPattern = /<p>\s*\[TOC\]\s*<\/p>|\[TOC\]/gi;
+          if (!tocPattern.test(html)) {
             return html;
           }
 
-          // Extract all headers from the HTML
-          const headerRegex = /<h([1-6])>(.*?)<\/h\1>/gi;
+          // Reset regex lastIndex after test
+          tocPattern.lastIndex = 0;
+
+          // Extract all headers from the HTML (with or without existing IDs)
+          const headerRegex = /<h([1-6])(?:\s+id="[^"]*")?>(.*?)<\/h\1>/gi;
           const headers = [];
           let match;
 
@@ -1040,20 +1044,21 @@
               .replace(/[^\w\s-]/g, '')
               .replace(/\s+/g, '-')
               .replace(/-+/g, '-')
-              .trim();
-            headers.push({ level, text, slug });
+              .trim() || 'header';
+            headers.push({ level, text, slug, original: match[0] });
           }
 
           if (headers.length === 0) {
-            return html.replace(/\[TOC\]|\[toc\]/gi, '');
+            return html.replace(tocPattern, '<p><em>No headers found for TOC</em></p>');
           }
 
           // Add IDs to headers in HTML
-          let headerIndex = 0;
-          html = html.replace(/<h([1-6])>(.*?)<\/h\1>/gi, (match, level, content) => {
-            const slug = headers[headerIndex].slug;
-            headerIndex++;
-            return `<h${level} id="${slug}">${content}</h${level}>`;
+          headers.forEach((header, index) => {
+            // Make slug unique if needed
+            const uniqueSlug = header.slug + (index > 0 ? '-' + index : '');
+            header.uniqueSlug = uniqueSlug;
+            const newHeader = `<h${header.level} id="${uniqueSlug}">${header.text}</h${header.level}>`;
+            html = html.replace(header.original, newHeader);
           });
 
           // Build TOC HTML
@@ -1063,13 +1068,13 @@
           headers.forEach(header => {
             const indent = header.level - minLevel;
             const padding = indent * 20;
-            tocHtml += `<li style="margin-left:${padding}px"><a href="#${header.slug}">${header.text}</a></li>`;
+            tocHtml += `<li style="margin-left:${padding}px"><a href="#${header.uniqueSlug}">${header.text}</a></li>`;
           });
 
           tocHtml += '</ul></nav>';
 
           // Replace [TOC] marker with generated TOC
-          return html.replace(/\[TOC\]|\[toc\]/gi, tocHtml);
+          return html.replace(tocPattern, tocHtml);
         }
       }];
     });
