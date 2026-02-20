@@ -636,13 +636,37 @@
         font-size: 28px;
       }
 
-      #container {
+      #wrapper {
+        display: flex;
         flex-direction: column;
+      }
+
+      /* Reorder elements: toolbar+editor first, controls last */
+      #controls {
+        order: 3;
+        margin-bottom: 0;
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid var(--border);
+      }
+
+      #toolbar {
+        order: 1;
+        border-radius: 4px;
+      }
+
+      #container {
+        order: 2;
+        flex-direction: column;
+      }
+
+      #stats {
+        order: 2;
       }
 
       #editor, #preview {
         width: 100% !important;
-        min-height: 300px;
+        min-height: 250px;
       }
 
       #resizer {
@@ -655,10 +679,6 @@
         content: '⋯';
       }
 
-      #toolbar {
-        border-radius: 4px;
-      }
-
       .control-row {
         flex-direction: column;
         align-items: stretch;
@@ -666,6 +686,23 @@
 
       #filename {
         width: 100%;
+      }
+
+      /* Make buttons more touch-friendly */
+      .button {
+        padding: 12px 16px;
+        font-size: 16px;
+      }
+
+      #archive {
+        max-height: 100px;
+        overflow-y: auto;
+      }
+
+      .help-links {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
       }
     }
   </style>
