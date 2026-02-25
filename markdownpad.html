@@ -967,6 +967,23 @@
 
     // Table extension
     showdown.extension('table', function() {
+      // Helper to parse inline markdown (bold, italic, code, links, strikethrough)
+      function parseInline(text) {
+        return text
+          // Bold: **text** or __text__
+          .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+          .replace(/__(.+?)__/g, '<strong>$1</strong>')
+          // Italic: *text* or _text_
+          .replace(/\*(.+?)\*/g, '<em>$1</em>')
+          .replace(/_(.+?)_/g, '<em>$1</em>')
+          // Strikethrough: ~~text~~
+          .replace(/~~(.+?)~~/g, '<del>$1</del>')
+          // Inline code: `code`
+          .replace(/`(.+?)`/g, '<code>$1</code>')
+          // Links: [text](url)
+          .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2">$1</a>');
+      }
+
       return [{
         type: 'lang',
         regex: /^[ ]{0,3}\|?.+\|.+\n[ ]{0,3}\|?[ ]*[-:]+[-| :]*\n([ ]{0,3}\|?.+\|.+\n)*$/gm,
@@ -985,7 +1002,7 @@
           let html = '<table><thead><tr>';
           headers.forEach((h, i) => {
             const align = alignments[i] || 'left';
-            html += `<th style="text-align:${align}">${h}</th>`;
+            html += `<th style="text-align:${align}">${parseInline(h)}</th>`;
           });
           html += '</tr></thead><tbody>';
 
@@ -994,7 +1011,7 @@
             html += '<tr>';
             cells.forEach((c, j) => {
               const align = alignments[j] || 'left';
-              html += `<td style="text-align:${align}">${c}</td>`;
+              html += `<td style="text-align:${align}">${parseInline(c)}</td>`;
             });
             html += '</tr>';
           }
