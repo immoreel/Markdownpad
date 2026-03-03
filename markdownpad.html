@@ -2025,7 +2025,7 @@ ${preview.innerHTML}
       }
 
       function toggleReaderMode() {
-        // Exit fullscreen if active
+        // Exit CSS fullscreen if active
         if (document.body.classList.contains('fullscreen')) {
           document.body.classList.remove('fullscreen');
           const fsBtn = toolbar.querySelector('[data-action="fullscreen"] i');
@@ -2033,20 +2033,46 @@ ${preview.innerHTML}
         }
 
         const entering = !document.body.classList.contains('reader-mode');
-        document.body.classList.toggle('reader-mode');
 
         if (entering) {
-          // Apply saved theme
+          // Enter reader mode
+          document.body.classList.add('reader-mode');
           setReaderTheme(getReaderTheme());
+
+          // Request browser fullscreen
+          if (document.documentElement.requestFullscreen) {
+            document.documentElement.requestFullscreen();
+          } else if (document.documentElement.webkitRequestFullscreen) {
+            document.documentElement.webkitRequestFullscreen();
+          }
 
           // Scroll to top
           preview.scrollTop = 0;
           window.scrollTo(0, 0);
         } else {
-          // Remove theme classes when exiting
+          // Exit reader mode
+          document.body.classList.remove('reader-mode');
+          readerThemes.forEach(t => document.body.classList.remove(`reader-${t}`));
+
+          // Exit browser fullscreen
+          if (document.fullscreenElement) {
+            document.exitFullscreen();
+          } else if (document.webkitFullscreenElement) {
+            document.webkitExitFullscreen();
+          }
+        }
+      }
+
+      // Listen for fullscreen exit (e.g., user presses Esc in browser)
+      function handleFullscreenExit() {
+        const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement;
+        if (!isFullscreen && document.body.classList.contains('reader-mode')) {
+          document.body.classList.remove('reader-mode');
           readerThemes.forEach(t => document.body.classList.remove(`reader-${t}`));
         }
       }
+      document.addEventListener('fullscreenchange', handleFullscreenExit);
+      document.addEventListener('webkitfullscreenchange', handleFullscreenExit);
 
       // ==========================================
       // Resizable Panes
@@ -2195,10 +2221,9 @@ ${preview.innerHTML}
           }
 
           // Escape to close dialogs or exit modes
+          // Note: Reader mode fullscreen exit is handled by browser's fullscreenchange event
           if (e.key === 'Escape') {
-            if (document.body.classList.contains('reader-mode')) {
-              toggleReaderMode();
-            } else if (searchDialog.classList.contains('visible')) {
+            if (searchDialog.classList.contains('visible')) {
               searchDialog.classList.remove('visible');
             } else if (cheatsheetModal.classList.contains('visible')) {
               cheatsheetModal.classList.remove('visible');
