@@ -565,6 +565,373 @@
       border-radius: 0;
     }
 
+    /* Reader mode - base styles */
+    body.reader-mode #branding,
+    body.reader-mode #controls,
+    body.reader-mode #toolbar,
+    body.reader-mode #stats,
+    body.reader-mode #editor,
+    body.reader-mode #resizer,
+    body.reader-mode #search-dialog {
+      display: none !important;
+    }
+
+    body.reader-mode #wrapper {
+      padding: 0;
+      max-width: 750px;
+      margin: 0 auto;
+    }
+
+    body.reader-mode #container {
+      display: block;
+    }
+
+    body.reader-mode #preview {
+      width: 100% !important;
+      flex: none;
+      min-height: 100vh;
+      border: none;
+      padding: 60px 40px;
+      font-size: 1.1em;
+      line-height: 1.8;
+    }
+
+    body.reader-mode #preview h1 {
+      font-size: 2.4em;
+      margin-top: 0;
+      border-bottom: none;
+    }
+
+    body.reader-mode #preview h2 {
+      font-size: 1.8em;
+      margin-top: 2em;
+    }
+
+    body.reader-mode #preview h3 {
+      font-size: 1.4em;
+      margin-top: 1.5em;
+      border-bottom: none;
+    }
+
+    body.reader-mode #preview p {
+      margin: 1.2em 0;
+      text-align: justify;
+    }
+
+    body.reader-mode #preview blockquote {
+      font-style: italic;
+    }
+
+    /* Reader theme: Light */
+    body.reader-mode.reader-light {
+      background: #ffffff;
+    }
+
+    body.reader-mode.reader-light #preview {
+      background: #ffffff;
+      color: #333333;
+    }
+
+    body.reader-mode.reader-light #preview h1,
+    body.reader-mode.reader-light #preview h2,
+    body.reader-mode.reader-light #preview h3 {
+      color: #1a1a1a;
+    }
+
+    body.reader-mode.reader-light #preview h2 {
+      border-bottom: 1px solid #e5e5e5;
+    }
+
+    body.reader-mode.reader-light #preview blockquote {
+      border-left: 3px solid #d0d0d0;
+      background: #f9f9f9;
+      color: #555;
+    }
+
+    body.reader-mode.reader-light #preview a {
+      color: #2563eb;
+    }
+
+    body.reader-mode.reader-light #preview code {
+      background: #f3f4f6;
+      border-color: #e5e5e5;
+    }
+
+    body.reader-mode.reader-light #preview pre {
+      background: #f8f9fa;
+      border-color: #e5e5e5;
+    }
+
+    /* Reader theme: Sepia */
+    body.reader-mode.reader-sepia {
+      background: #f4f1eb;
+    }
+
+    body.reader-mode.reader-sepia #preview {
+      background: #f4f1eb;
+      color: #2c2c2c;
+    }
+
+    body.reader-mode.reader-sepia #preview h1,
+    body.reader-mode.reader-sepia #preview h2,
+    body.reader-mode.reader-sepia #preview h3 {
+      color: #1a1a1a;
+    }
+
+    body.reader-mode.reader-sepia #preview h2 {
+      border-bottom: 1px solid #e0ddd8;
+    }
+
+    body.reader-mode.reader-sepia #preview blockquote {
+      border-left: 3px solid #c9c5bd;
+      background: rgba(0,0,0,0.02);
+      color: #555;
+    }
+
+    body.reader-mode.reader-sepia #preview a {
+      color: #5c6bc0;
+    }
+
+    body.reader-mode.reader-sepia #preview code {
+      background: #f0ede8;
+      border-color: #e0ddd8;
+    }
+
+    body.reader-mode.reader-sepia #preview pre {
+      background: #f5f3f0;
+      border-color: #e0ddd8;
+    }
+
+    /* Reader theme: Dark */
+    body.reader-mode.reader-dark {
+      background: #2a2a2a;
+    }
+
+    body.reader-mode.reader-dark #preview {
+      background: #2a2a2a;
+      color: #d8d8d8;
+    }
+
+    body.reader-mode.reader-dark #preview h1,
+    body.reader-mode.reader-dark #preview h2,
+    body.reader-mode.reader-dark #preview h3 {
+      color: #f2f2f2;
+    }
+
+    body.reader-mode.reader-dark #preview h2 {
+      border-bottom: 1px solid #444;
+    }
+
+    body.reader-mode.reader-dark #preview blockquote {
+      border-left: 3px solid #555;
+      background: rgba(255,255,255,0.04);
+      color: #b0b0b0;
+    }
+
+    body.reader-mode.reader-dark #preview a {
+      color: #60a5fa;
+    }
+
+    body.reader-mode.reader-dark #preview code {
+      background: #383838;
+      border-color: #4a4a4a;
+      color: #e0e0e0;
+    }
+
+    body.reader-mode.reader-dark #preview pre {
+      background: #333;
+      border-color: #4a4a4a;
+    }
+
+    body.reader-mode.reader-dark #preview table {
+      border-color: #4a4a4a;
+    }
+
+    body.reader-mode.reader-dark #preview tr {
+      background-color: #2a2a2a;
+      border-color: #4a4a4a;
+    }
+
+    body.reader-mode.reader-dark #preview tr:nth-child(even) {
+      background-color: #323232;
+    }
+
+    body.reader-mode.reader-dark #preview th {
+      background: #383838;
+      color: #f2f2f2;
+    }
+
+    body.reader-mode.reader-dark #preview td,
+    body.reader-mode.reader-dark #preview th {
+      border-color: #4a4a4a;
+    }
+
+    /* Reader theme: Night (AMOLED) */
+    body.reader-mode.reader-night {
+      background: #000000;
+    }
+
+    body.reader-mode.reader-night #preview {
+      background: #000000;
+      color: #b0b0b0;
+    }
+
+    body.reader-mode.reader-night #preview h1,
+    body.reader-mode.reader-night #preview h2,
+    body.reader-mode.reader-night #preview h3 {
+      color: #e0e0e0;
+    }
+
+    body.reader-mode.reader-night #preview h2 {
+      border-bottom: 1px solid #222;
+    }
+
+    body.reader-mode.reader-night #preview blockquote {
+      border-left: 3px solid #333;
+      background: rgba(255,255,255,0.02);
+      color: #888;
+    }
+
+    body.reader-mode.reader-night #preview a {
+      color: #5b9bd5;
+    }
+
+    body.reader-mode.reader-night #preview code {
+      background: #1a1a1a;
+      border-color: #2a2a2a;
+      color: #c0c0c0;
+    }
+
+    body.reader-mode.reader-night #preview pre {
+      background: #111;
+      border-color: #2a2a2a;
+    }
+
+    body.reader-mode.reader-night #preview table {
+      border-color: #2a2a2a;
+    }
+
+    body.reader-mode.reader-night #preview tr {
+      background-color: #000;
+      border-color: #2a2a2a;
+    }
+
+    body.reader-mode.reader-night #preview tr:nth-child(even) {
+      background-color: #0a0a0a;
+    }
+
+    body.reader-mode.reader-night #preview th {
+      background: #1a1a1a;
+      color: #e0e0e0;
+    }
+
+    body.reader-mode.reader-night #preview td,
+    body.reader-mode.reader-night #preview th {
+      border-color: #2a2a2a;
+    }
+
+    /* Reader controls */
+    #reader-controls {
+      display: none;
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 5000;
+      gap: 8px;
+    }
+
+    body.reader-mode #reader-controls {
+      display: flex;
+      align-items: center;
+    }
+
+    #reader-exit {
+      background: rgba(108, 120, 142, 0.9);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 44px;
+      height: 44px;
+      font-size: 18px;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #reader-exit:hover {
+      background: var(--primary);
+      transform: scale(1.1);
+    }
+
+    /* Style picker */
+    #reader-style-picker {
+      display: flex;
+      gap: 6px;
+      background: rgba(0,0,0,0.4);
+      padding: 6px 10px;
+      border-radius: 22px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    }
+
+    .reader-style-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+    }
+
+    .reader-style-btn:hover {
+      transform: scale(1.1);
+    }
+
+    .reader-style-btn.active {
+      border-color: #fff;
+      box-shadow: 0 0 0 2px rgba(0,0,0,0.3);
+    }
+
+    .reader-style-btn[data-theme="light"] {
+      background: #ffffff;
+      border-color: #ddd;
+    }
+
+    .reader-style-btn[data-theme="light"].active {
+      border-color: #333;
+    }
+
+    .reader-style-btn[data-theme="sepia"] {
+      background: #f4f1eb;
+    }
+
+    .reader-style-btn[data-theme="dark"] {
+      background: #2a2a2a;
+    }
+
+    .reader-style-btn[data-theme="night"] {
+      background: #000000;
+    }
+
+    /* Dark theme adjustments for controls */
+    body.reader-mode.reader-dark #reader-style-picker,
+    body.reader-mode.reader-night #reader-style-picker {
+      background: rgba(255,255,255,0.15);
+    }
+
+    body.reader-mode.reader-dark #reader-exit,
+    body.reader-mode.reader-night #reader-exit {
+      background: rgba(255,255,255,0.2);
+    }
+
+    body.reader-mode.reader-dark #reader-exit:hover,
+    body.reader-mode.reader-night #reader-exit:hover {
+      background: rgba(255,255,255,0.3);
+    }
+
     /* Drag and drop overlay */
     #drop-overlay {
       display: none;
@@ -857,6 +1224,9 @@
       <button type="button" class="toolbar-btn" data-action="fullscreen" title="Fullscreen (F11)">
         <i class="fa-solid fa-expand"></i>
       </button>
+      <button type="button" class="toolbar-btn" data-action="reader" title="Reader Mode (F12)">
+        <i class="fa-solid fa-book-open-reader"></i>
+      </button>
       <button type="button" class="toolbar-btn" data-action="print" title="Print">
         <i class="fa-solid fa-print"></i>
       </button>
@@ -929,7 +1299,8 @@
         <tr><td>Undo</td><td><code>Ctrl + Z</code></td></tr>
         <tr><td>Redo</td><td><code>Ctrl + Y</code></td></tr>
         <tr><td>Fullscreen</td><td><code>F11</code></td></tr>
-        <tr><td>Exit Fullscreen</td><td><code>Esc</code></td></tr>
+        <tr><td>Reader Mode</td><td><code>F12</code></td></tr>
+        <tr><td>Exit Mode</td><td><code>Esc</code></td></tr>
       </table>
     </div>
   </div>
@@ -938,6 +1309,19 @@
   <div id="drop-overlay">
     <i class="fa-solid fa-cloud-arrow-up"></i>
     <span>Drop file to import</span>
+  </div>
+
+  <!-- Reader mode controls -->
+  <div id="reader-controls">
+    <div id="reader-style-picker">
+      <button class="reader-style-btn" data-theme="light" title="Light"></button>
+      <button class="reader-style-btn active" data-theme="sepia" title="Sepia"></button>
+      <button class="reader-style-btn" data-theme="dark" title="Dark"></button>
+      <button class="reader-style-btn" data-theme="night" title="Night (AMOLED)"></button>
+    </div>
+    <button id="reader-exit" title="Exit Reader Mode (Esc)">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
   </div>
 
   <!-- Toast notification -->
@@ -1506,6 +1890,7 @@ ${preview.innerHTML}
         undo: () => undo(),
         redo: () => redo(),
         fullscreen: () => toggleFullscreen(),
+        reader: () => toggleReaderMode(),
         print: () => window.print()
       };
 
@@ -1610,6 +1995,56 @@ ${preview.innerHTML}
           btn.className = 'fa-solid fa-compress';
         } else {
           btn.className = 'fa-solid fa-expand';
+        }
+      }
+
+      // ==========================================
+      // Reader Mode
+      // ==========================================
+
+      const readerThemes = ['light', 'sepia', 'dark', 'night'];
+
+      function setReaderTheme(theme) {
+        // Remove all theme classes
+        readerThemes.forEach(t => document.body.classList.remove(`reader-${t}`));
+
+        // Add selected theme
+        document.body.classList.add(`reader-${theme}`);
+
+        // Update active button
+        document.querySelectorAll('.reader-style-btn').forEach(btn => {
+          btn.classList.toggle('active', btn.dataset.theme === theme);
+        });
+
+        // Save preference
+        localStorage.setItem('markdowneditor.readerTheme', theme);
+      }
+
+      function getReaderTheme() {
+        return localStorage.getItem('markdowneditor.readerTheme') || 'sepia';
+      }
+
+      function toggleReaderMode() {
+        // Exit fullscreen if active
+        if (document.body.classList.contains('fullscreen')) {
+          document.body.classList.remove('fullscreen');
+          const fsBtn = toolbar.querySelector('[data-action="fullscreen"] i');
+          fsBtn.className = 'fa-solid fa-expand';
+        }
+
+        const entering = !document.body.classList.contains('reader-mode');
+        document.body.classList.toggle('reader-mode');
+
+        if (entering) {
+          // Apply saved theme
+          setReaderTheme(getReaderTheme());
+
+          // Scroll to top
+          preview.scrollTop = 0;
+          window.scrollTo(0, 0);
+        } else {
+          // Remove theme classes when exiting
+          readerThemes.forEach(t => document.body.classList.remove(`reader-${t}`));
         }
       }
 
@@ -1753,9 +2188,17 @@ ${preview.innerHTML}
             toggleFullscreen();
           }
 
-          // Escape to close dialogs or exit fullscreen
+          // F12 for reader mode
+          if (e.key === 'F12') {
+            e.preventDefault();
+            toggleReaderMode();
+          }
+
+          // Escape to close dialogs or exit modes
           if (e.key === 'Escape') {
-            if (searchDialog.classList.contains('visible')) {
+            if (document.body.classList.contains('reader-mode')) {
+              toggleReaderMode();
+            } else if (searchDialog.classList.contains('visible')) {
               searchDialog.classList.remove('visible');
             } else if (cheatsheetModal.classList.contains('visible')) {
               cheatsheetModal.classList.remove('visible');
@@ -1837,6 +2280,16 @@ ${preview.innerHTML}
           }
         });
 
+        // Reader mode controls
+        document.getElementById('reader-exit').addEventListener('click', toggleReaderMode);
+
+        // Reader style picker
+        document.querySelectorAll('.reader-style-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            setReaderTheme(btn.dataset.theme);
+          });
+        });
+
         // Filename input - show delete button when has value
         filenameInput.addEventListener('input', () => {
           const filename = filenameInput.value.trim();
@@ -1863,6 +2316,12 @@ ${preview.innerHTML}
 
         // Initialize history with empty state
         saveToHistory();
+
+        // Initialize reader theme button state
+        const savedTheme = getReaderTheme();
+        document.querySelectorAll('.reader-style-btn').forEach(btn => {
+          btn.classList.toggle('active', btn.dataset.theme === savedTheme);
+        });
 
         // Initial render
         redraw();
