@@ -830,60 +830,129 @@
       border-color: #2a2a2a;
     }
 
-    /* Reader controls */
+    /* Reader controls - flyout menu */
     #reader-controls {
       display: none;
       position: fixed;
       top: 20px;
       right: 20px;
       z-index: 5000;
-      gap: 8px;
     }
 
     body.reader-mode #reader-controls {
-      display: flex;
-      align-items: center;
+      display: block;
     }
 
-    #reader-exit {
-      background: rgba(108, 120, 142, 0.9);
-      color: white;
+    #reader-menu-toggle {
+      background: rgba(128, 128, 128, 0.3);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      color: inherit;
       border: none;
       border-radius: 50%;
-      width: 44px;
-      height: 44px;
-      font-size: 18px;
+      width: 40px;
+      height: 40px;
+      font-size: 16px;
       cursor: pointer;
       transition: all 0.2s;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
       display: flex;
       align-items: center;
       justify-content: center;
+      opacity: 0.6;
+    }
+
+    #reader-menu-toggle:hover {
+      opacity: 1;
+      transform: scale(1.05);
+    }
+
+    #reader-flyout {
+      display: none;
+      position: absolute;
+      top: 0;
+      right: 0;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 12px;
+      padding: 16px;
+      min-width: 200px;
+      max-width: 280px;
+      max-height: 70vh;
+      overflow-y: auto;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    }
+
+    #reader-flyout.open {
+      display: block;
+    }
+
+    /* Flyout header */
+    .flyout-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(0,0,0,0.1);
+    }
+
+    .flyout-header span {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #666;
+    }
+
+    #reader-exit {
+      background: none;
+      border: none;
+      font-size: 14px;
+      cursor: pointer;
+      color: #999;
+      padding: 4px 8px;
+      border-radius: 4px;
+      transition: all 0.2s;
     }
 
     #reader-exit:hover {
-      background: var(--primary);
-      transform: scale(1.1);
+      background: rgba(220, 53, 69, 0.1);
+      color: #dc3545;
     }
 
-    /* Style picker */
+    /* Theme section */
+    .flyout-section {
+      margin-bottom: 16px;
+    }
+
+    .flyout-section:last-child {
+      margin-bottom: 0;
+    }
+
+    .flyout-label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #888;
+      margin-bottom: 8px;
+      display: block;
+    }
+
     #reader-style-picker {
       display: flex;
-      gap: 6px;
-      background: rgba(0,0,0,0.4);
-      padding: 6px 10px;
-      border-radius: 22px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      gap: 8px;
     }
 
     .reader-style-btn {
-      width: 32px;
-      height: 32px;
+      width: 28px;
+      height: 28px;
       border-radius: 50%;
       border: 2px solid transparent;
       cursor: pointer;
       transition: all 0.2s;
-      position: relative;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
 
     .reader-style-btn:hover {
@@ -891,17 +960,13 @@
     }
 
     .reader-style-btn.active {
-      border-color: #fff;
-      box-shadow: 0 0 0 2px rgba(0,0,0,0.3);
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(108, 120, 142, 0.3);
     }
 
     .reader-style-btn[data-theme="light"] {
       background: #ffffff;
       border-color: #ddd;
-    }
-
-    .reader-style-btn[data-theme="light"].active {
-      border-color: #333;
     }
 
     .reader-style-btn[data-theme="sepia"] {
@@ -916,20 +981,83 @@
       background: #000000;
     }
 
-    /* Dark theme adjustments for controls */
-    body.reader-mode.reader-dark #reader-style-picker,
-    body.reader-mode.reader-night #reader-style-picker {
-      background: rgba(255,255,255,0.15);
+    /* TOC in flyout */
+    #reader-toc {
+      display: none;
+    }
+
+    #reader-toc.has-items {
+      display: block;
+    }
+
+    #reader-toc-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      font-size: 13px;
+    }
+
+    #reader-toc-list li {
+      margin: 0;
+    }
+
+    #reader-toc-list a {
+      display: block;
+      padding: 6px 0;
+      color: #444;
+      text-decoration: none;
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+      transition: color 0.2s;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    #reader-toc-list a:hover {
+      color: var(--primary);
+    }
+
+    #reader-toc-list li:last-child a {
+      border-bottom: none;
+    }
+
+    /* Dark theme adjustments */
+    body.reader-mode.reader-dark #reader-flyout,
+    body.reader-mode.reader-night #reader-flyout {
+      background: rgba(40, 40, 40, 0.95);
+    }
+
+    body.reader-mode.reader-dark .flyout-header span,
+    body.reader-mode.reader-night .flyout-header span,
+    body.reader-mode.reader-dark .flyout-label,
+    body.reader-mode.reader-night .flyout-label {
+      color: #888;
+    }
+
+    body.reader-mode.reader-dark .flyout-header,
+    body.reader-mode.reader-night .flyout-header {
+      border-color: rgba(255,255,255,0.1);
+    }
+
+    body.reader-mode.reader-dark #reader-toc-list a,
+    body.reader-mode.reader-night #reader-toc-list a {
+      color: #bbb;
+      border-color: rgba(255,255,255,0.05);
+    }
+
+    body.reader-mode.reader-dark #reader-toc-list a:hover,
+    body.reader-mode.reader-night #reader-toc-list a:hover {
+      color: #fff;
     }
 
     body.reader-mode.reader-dark #reader-exit,
     body.reader-mode.reader-night #reader-exit {
-      background: rgba(255,255,255,0.2);
+      color: #888;
     }
 
-    body.reader-mode.reader-dark #reader-exit:hover,
-    body.reader-mode.reader-night #reader-exit:hover {
-      background: rgba(255,255,255,0.3);
+    body.reader-mode.reader-dark .reader-style-btn.active,
+    body.reader-mode.reader-night .reader-style-btn.active {
+      border-color: #fff;
     }
 
     /* Drag and drop overlay */
@@ -1313,15 +1441,30 @@
 
   <!-- Reader mode controls -->
   <div id="reader-controls">
-    <div id="reader-style-picker">
-      <button class="reader-style-btn" data-theme="light" title="Light"></button>
-      <button class="reader-style-btn active" data-theme="sepia" title="Sepia"></button>
-      <button class="reader-style-btn" data-theme="dark" title="Dark"></button>
-      <button class="reader-style-btn" data-theme="night" title="Night (AMOLED)"></button>
-    </div>
-    <button id="reader-exit" title="Exit Reader Mode (Esc)">
-      <i class="fa-solid fa-xmark"></i>
+    <button id="reader-menu-toggle" title="Menu">
+      <i class="fa-solid fa-ellipsis"></i>
     </button>
+    <div id="reader-flyout">
+      <div class="flyout-header">
+        <span>Reader</span>
+        <button id="reader-exit" title="Sluiten (Esc)">
+          <i class="fa-solid fa-xmark"></i> Sluiten
+        </button>
+      </div>
+      <div class="flyout-section">
+        <span class="flyout-label">Thema</span>
+        <div id="reader-style-picker">
+          <button class="reader-style-btn" data-theme="light" title="Light"></button>
+          <button class="reader-style-btn active" data-theme="sepia" title="Sepia"></button>
+          <button class="reader-style-btn" data-theme="dark" title="Dark"></button>
+          <button class="reader-style-btn" data-theme="night" title="Night"></button>
+        </div>
+      </div>
+      <div class="flyout-section" id="reader-toc">
+        <span class="flyout-label">Inhoudsopgave</span>
+        <ul id="reader-toc-list"></ul>
+      </div>
+    </div>
   </div>
 
   <!-- Toast notification -->
@@ -2024,6 +2167,41 @@ ${preview.innerHTML}
         return localStorage.getItem('markdowneditor.readerTheme') || 'sepia';
       }
 
+      function updateReaderToc() {
+        const tocList = document.getElementById('reader-toc-list');
+        const tocSection = document.getElementById('reader-toc');
+        const headers = preview.querySelectorAll('h1, h2, h3');
+
+        tocList.innerHTML = '';
+
+        if (headers.length === 0) {
+          tocSection.classList.remove('has-items');
+          return;
+        }
+
+        const minLevel = Math.min(...Array.from(headers).map(h => parseInt(h.tagName[1])));
+
+        headers.forEach((header, index) => {
+          const level = parseInt(header.tagName[1]);
+          const indent = (level - minLevel) * 12;
+
+          // Ensure header has an ID for linking
+          if (!header.id) {
+            header.id = `reader-heading-${index}`;
+          }
+
+          const li = document.createElement('li');
+          const a = document.createElement('a');
+          a.href = `#${header.id}`;
+          a.textContent = header.textContent;
+          a.style.paddingLeft = `${indent}px`;
+          li.appendChild(a);
+          tocList.appendChild(li);
+        });
+
+        tocSection.classList.add('has-items');
+      }
+
       function toggleReaderMode() {
         // Exit CSS fullscreen if active
         if (document.body.classList.contains('fullscreen')) {
@@ -2054,6 +2232,9 @@ ${preview.innerHTML}
           document.body.classList.remove('reader-mode');
           readerThemes.forEach(t => document.body.classList.remove(`reader-${t}`));
 
+          // Close flyout
+          document.getElementById('reader-flyout').classList.remove('open');
+
           // Exit browser fullscreen
           if (document.fullscreenElement) {
             document.exitFullscreen();
@@ -2069,6 +2250,7 @@ ${preview.innerHTML}
         if (!isFullscreen && document.body.classList.contains('reader-mode')) {
           document.body.classList.remove('reader-mode');
           readerThemes.forEach(t => document.body.classList.remove(`reader-${t}`));
+          document.getElementById('reader-flyout').classList.remove('open');
         }
       }
       document.addEventListener('fullscreenchange', handleFullscreenExit);
@@ -2306,13 +2488,44 @@ ${preview.innerHTML}
         });
 
         // Reader mode controls
+        const readerFlyout = document.getElementById('reader-flyout');
+        const readerMenuToggle = document.getElementById('reader-menu-toggle');
+
+        readerMenuToggle.addEventListener('click', (e) => {
+          e.stopPropagation();
+          readerFlyout.classList.toggle('open');
+          if (readerFlyout.classList.contains('open')) {
+            updateReaderToc();
+          }
+        });
+
         document.getElementById('reader-exit').addEventListener('click', toggleReaderMode);
+
+        // Close flyout when clicking outside
+        document.addEventListener('click', (e) => {
+          if (!readerFlyout.contains(e.target) && e.target !== readerMenuToggle) {
+            readerFlyout.classList.remove('open');
+          }
+        });
 
         // Reader style picker
         document.querySelectorAll('.reader-style-btn').forEach(btn => {
           btn.addEventListener('click', () => {
             setReaderTheme(btn.dataset.theme);
           });
+        });
+
+        // TOC click handler
+        document.getElementById('reader-toc-list').addEventListener('click', (e) => {
+          if (e.target.tagName === 'A') {
+            e.preventDefault();
+            const targetId = e.target.getAttribute('href').substring(1);
+            const targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth' });
+              readerFlyout.classList.remove('open');
+            }
+          }
         });
 
         // Filename input - show delete button when has value
