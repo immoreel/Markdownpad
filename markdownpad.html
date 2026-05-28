@@ -3,12 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com; img-src 'self' data: blob: https:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
   <title>MarkdownPad</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 208 128'%3E%3Cmask id='a'%3E%3Crect width='100%25' height='100%25' fill='%23fff'/%3E%3Cpath d='M30 98v-68h20l20 25 20-25h20v68h-20v-39l-20 25-20-25v39zM155 98l-30-33h20v-35h20v35h20z'/%3E%3C/mask%3E%3Crect width='100%25' height='100%25' ry='15' fill='%23333' mask='url(%23a)'/%3E%3C/svg%3E">
 
-  <!-- Dependencies via CDN (HTTPS) -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github.min.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <!-- Dependencies via CDN (HTTPS, SRI-pinned) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github.min.css" integrity="sha384-eFTL69TLRZTkNfYZOLM+G04821K1qZao/4QLJbet1pP4tcF+fdXq/9CdqAbWRl/L" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha384-t1nt8BQoYMLFN5p42tRAtuAAFQaCQODekUVeKKZrEnEyp4H2R0RHFz0KWpmj7i8g" crossorigin="anonymous" referrerpolicy="no-referrer">
 
   <style>
     *, *::before, *::after {
@@ -1472,10 +1473,13 @@
   <div id="toast"></div>
 
   <!-- Showdown.js via CDN -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js" integrity="sha384-GP2+CwBlakZSDJUr+E4JvbxpM75i1i8+RKkieQxzuyDZLG+5105E1OfHIjzcXyWH" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
   <!-- Highlight.js via CDN -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js" integrity="sha384-RH2xi4eIQ/gjtbs9fUXM68sLSi99C7ZWBRX1vDrVv6GQXRibxXLbwO2NGZB74MbU" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+  <!-- DOMPurify via CDN (sanitization of Markdown-rendered HTML) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.2.4/purify.min.js" integrity="sha384-eEu5CTj3qGvu9PdJuS+YlkNi7d2XxQROAFYOr59zgObtlcux1ae1Il3u7jvdCSWu" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
   <script>
     'use strict';
@@ -1483,85 +1487,11 @@
     // ==========================================
     // Showdown Extensions
     // ==========================================
-
-    // GitHub-style strikethrough
-    showdown.extension('github', function() {
-      return [{
-        type: 'lang',
-        regex: '~~([^~]+)~~',
-        replace: '<del>$1</del>'
-      }];
-    });
-
-    // Table extension
-    showdown.extension('table', function() {
-      // Helper to parse inline markdown (bold, italic, code, links, strikethrough)
-      function parseInline(text) {
-        return text
-          // Bold: **text** or __text__
-          .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-          .replace(/__(.+?)__/g, '<strong>$1</strong>')
-          // Italic: *text* or _text_
-          .replace(/\*(.+?)\*/g, '<em>$1</em>')
-          .replace(/_(.+?)_/g, '<em>$1</em>')
-          // Strikethrough: ~~text~~
-          .replace(/~~(.+?)~~/g, '<del>$1</del>')
-          // Inline code: `code`
-          .replace(/`(.+?)`/g, '<code>$1</code>')
-          // Links: [text](url)
-          .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2">$1</a>');
-      }
-
-      return [{
-        type: 'lang',
-        regex: /^[ ]{0,3}\|?.+\|.+\n[ ]{0,3}\|?[ ]*[-:]+[-| :]*\n([ ]{0,3}\|?.+\|.+\n)*$/gm,
-        replace: function(match) {
-          const lines = match.trim().split('\n');
-          if (lines.length < 2) return match;
-
-          const headers = lines[0].split('|').map(h => h.trim()).filter(h => h);
-          const alignments = lines[1].split('|').map(a => {
-            a = a.trim();
-            if (a.startsWith(':') && a.endsWith(':')) return 'center';
-            if (a.endsWith(':')) return 'right';
-            return 'left';
-          }).filter(a => a);
-
-          let html = '<table><thead><tr>';
-          headers.forEach((h, i) => {
-            const align = alignments[i] || 'left';
-            html += `<th style="text-align:${align}">${parseInline(h)}</th>`;
-          });
-          html += '</tr></thead><tbody>';
-
-          for (let i = 2; i < lines.length; i++) {
-            const cells = lines[i].split('|').map(c => c.trim()).filter(c => c !== '');
-            html += '<tr>';
-            cells.forEach((c, j) => {
-              const align = alignments[j] || 'left';
-              html += `<td style="text-align:${align}">${parseInline(c)}</td>`;
-            });
-            html += '</tr>';
-          }
-
-          html += '</tbody></table>';
-          return html;
-        }
-      }];
-    });
-
-    // Checklist extension
-    showdown.extension('checklist', function() {
-      return [{
-        type: 'lang',
-        regex: /^- \[ \] (.+)$/gm,
-        replace: '<li class="checklist"><input type="checkbox" disabled> $1</li>'
-      }, {
-        type: 'lang',
-        regex: /^- \[x\] (.+)$/gmi,
-        replace: '<li class="checklist"><input type="checkbox" checked disabled> $1</li>'
-      }];
-    });
+    //
+    // Note: tables, strikethrough and task-list checkboxes are handled by
+    // Showdown's built-in `tables`, `strikethrough` and `tasklists` options
+    // (see Converter init below). Custom re-implementations were removed for
+    // security (raw href injection in tables) and to avoid duplication.
 
     // TOC (Table of Contents) extension
     showdown.extension('toc', function() {
@@ -1664,13 +1594,14 @@
     document.addEventListener('DOMContentLoaded', function() {
       // Initialize Showdown converter with extensions
       const converter = new showdown.Converter({
-        extensions: ['github', 'table', 'checklist', 'toc'],
+        extensions: ['toc'],
         tables: true,
         strikethrough: true,
         ghCodeBlocks: true,
         tasklists: true,
         smoothLivePreview: true,
-        simpleLineBreaks: true
+        simpleLineBreaks: true,
+        openLinksInNewWindow: true
       });
 
       // DOM Elements
@@ -1763,9 +1694,18 @@
       // Render Functions
       // ==========================================
 
+      function renderMarkdown(src) {
+        const rawHtml = converter.makeHtml(src);
+        return DOMPurify.sanitize(rawHtml, {
+          ADD_ATTR: ['target'],
+          FORBID_TAGS: ['style'],
+          FORBID_ATTR: ['onerror', 'onload', 'onclick']
+        });
+      }
+
       function redraw() {
         try {
-          preview.innerHTML = converter.makeHtml(editor.value);
+          preview.innerHTML = renderMarkdown(editor.value);
 
           // Highlight code blocks
           preview.querySelectorAll('pre code').forEach(block => {
@@ -1946,13 +1886,26 @@
 
       function exportHtml() {
         const filename = filenameInput.value.trim() || 'document';
+
+        // Render + sanitize in a detached element, then pre-highlight code
+        // blocks inline so the exported file needs no external scripts.
+        const sandbox = document.createElement('div');
+        sandbox.innerHTML = renderMarkdown(editor.value);
+        sandbox.querySelectorAll('pre code').forEach(block => {
+          hljs.highlightElement(block);
+        });
+        const safeBody = sandbox.innerHTML;
+        const safeTitle = filename.replace(/[<>&"']/g, c =>
+          ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;', "'": '&#39;' }[c])
+        );
+
         const htmlContent = `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${filename}</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github.min.css">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data: https:; base-uri 'none'">
+  <title>${safeTitle}</title>
   <style>
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif; max-width: 800px; margin: 40px auto; padding: 0 20px; line-height: 1.6; }
     pre { background: #f6f8fa; padding: 16px; border-radius: 6px; overflow-x: auto; }
@@ -1963,12 +1916,17 @@
     th, td { border: 1px solid #dfe2e5; padding: 8px 12px; }
     th { background: #f6f8fa; }
     img { max-width: 100%; }
+    .hljs-keyword,.hljs-selector-tag,.hljs-literal,.hljs-section,.hljs-link{color:#d73a49}
+    .hljs-function .hljs-keyword{color:#d73a49}
+    .hljs-string,.hljs-attr,.hljs-symbol,.hljs-bullet,.hljs-addition{color:#032f62}
+    .hljs-title,.hljs-name,.hljs-type,.hljs-attribute,.hljs-built_in{color:#6f42c1}
+    .hljs-comment,.hljs-quote,.hljs-deletion,.hljs-meta{color:#6a737d}
+    .hljs-number,.hljs-regexp,.hljs-template-variable,.hljs-variable{color:#005cc5}
+    .hljs-emphasis{font-style:italic}.hljs-strong{font-weight:bold}
   </style>
 </head>
 <body>
-${preview.innerHTML}
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"><\/script>
-  <script>hljs.highlightAll();<\/script>
+${safeBody}
 </body>
 </html>`;
 
